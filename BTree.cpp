@@ -16,13 +16,13 @@ void BTree::insert(const int value)
 	BTreeNode* newNode = root->insert(value);
 	if (newNode != NULL)
 	{
-		BTreeNode *oldRoot = root;
+		//BTreeNode *oldRoot = root;
 		//Need to change logic 
-		InternalNode *newRoot = new InternalNode(internalSize, leafSize, NULL, NULL, NULL);
-		newRoot->insert(oldRoot, newNode);//set new parent's property
-		oldRoot->setParent(newRoot);//set child point to parent
-		newNode->setParent(newRoot);
-		root = newRoot;
+		//InternalNode *newRoot = new InternalNode(internalSize, leafSize, NULL, NULL, NULL);
+		//newRoot->insert(oldRoot, newNode);//set new parent's property
+		//oldRoot->setParent(newRoot);//set child point to parent
+		//newNode->setParent(newRoot);
+		//root = newRoot;
 		//Need to change logic 
 	}
   // students must write this
