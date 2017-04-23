@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include "LeafNode.h"
 #include "InternalNode.h"
 #include "QueueAr.h"
@@ -26,17 +27,27 @@ int LeafNode::getMinimum()const
 
 LeafNode* LeafNode::insert(int value)
 {
-	if (count < sizeof(values)) {
+	if (count < leafSize) {
 		values[count] = value;
 		count++;
 		SortedArray();
 	}
 	else {
-		//Checking LeftSibling
-		//Checking RightSibling
-		//Split
+		if (getLeftSibling() != NULL && getLeftSibling()->getCount() < leafSize) { //Checking LeftSibling
+			//ShiftValueToLeft(value);
+			//return NULL;
+			cout << "error 1";
+		}
+		else if (getRightSibling() != NULL && getRightSibling()->getCount() < leafSize) { //Checking RightSibling
+			//ShiftValueToRight(value);
+			//return NULL;
+			cout << "error 2";
+		}
+		else {
+			cout << "good";
+			return Split(value); //Split
+		}
 	}
-
   // students must write this
   return NULL; // to avoid warnings for now.
 }  // LeafNode::insert()
@@ -49,17 +60,67 @@ void LeafNode::print(Queue <BTreeNode*> &queue)
   cout << endl;
 } // LeafNode::print()
 
-//Checking LeftSibling.
-void LeafNode::CheckingLeftSibling() {
-
-}
-//Checking RightSibling
-void LeafNode::CheckingRightSibling() {
-
-}
 //Split
-void LeafNode::Split() {
+LeafNode* LeafNode::Split(int value) {
+	/*
+	LeafNode* newNode = new LeafNode(leafSize, NULL, NULL, NULL);
 
+	//Normal case
+	newNode->setLeftSibling(this);
+	setLeftSibling(newNode);
+	for (int i = count / 2; i < count; i++) {
+		newNode->insert(values[i]);
+		count--;
+	}
+	if (value > values[count / 2]) {
+		newNode->insert(value);
+	}
+	else {
+		insert(value);
+	}
+	return newNode;
+	*/
+
+	LeafNode* newNode = new LeafNode(leafSize, NULL, NULL, NULL);
+	//set all pointers
+	BTreeNode* originalRight = getRightSibling();
+
+	newNode->setParent(parent);//if parent is full?
+	setRightSibling(newNode);
+	if (originalRight == NULL)//there is no node on the right
+	{
+		newNode->setRightSibling(NULL);
+		newNode->setLeftSibling(this);
+	}
+	else//there is node on the right
+	{
+		newNode->setRightSibling(originalRight);
+		newNode->setLeftSibling(this);
+		originalRight->setLeftSibling(newNode);
+	}
+	//move numbers
+	int max = values[leafSize - 1];
+	if (max>value)
+	{
+		newNode->insert(max);
+		values[leafSize - 1] = 0;
+		count--;
+		insert(value);
+	}
+	else
+	{
+		newNode->insert(value);
+		//count--;
+	}
+	int center = (int)ceil(double(leafSize) / 2);
+	for (int i = center; i < leafSize; i++)
+	{
+		newNode->insert(values[i]);
+		values[i] = 0;//set the removed number to 0
+		count--;
+	}
+	//
+	return newNode;
 }
 
 //Sorted Array using Insertion Sort
@@ -76,4 +137,34 @@ void LeafNode::SortedArray() {
 	}
 }
 
+//Shift the Value to the Left Sibling
+void LeafNode::ShiftValueToLeft(int value) {
+	getLeftSibling()->insert(values[0]);
+	DeleteFirstNodeFromLeaf();
+	insert(value);
+}
 
+//Shift the Value to the Right Sibling
+void LeafNode::ShiftValueToRight(int value) {
+	DeleteFirstNodeFromLeaf();
+	insert(value);
+}
+
+//Delete the first value from the leaf
+void LeafNode::DeleteFirstNodeFromLeaf() {
+	for (int i = 0; i < count; i++) {
+		values[i] = values[i + 1];
+	}
+	count--;
+}
+
+//Delete the last value from the leaf
+void LeafNode::DeleteLastNodeFromLeaf(int value) {
+	if (values[count] < value) {
+		getRightSibling()->insert(value);
+	}
+	else {
+		getRightSibling()->insert(count);
+	}
+	count--;
+}

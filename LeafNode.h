@@ -14,11 +14,13 @@ public:
   // else NULL
   void print(Queue <BTreeNode*> &queue);
 
-  void CheckingLeftSibling();
-  void CheckingRightSibling();
-  void Split();
+  LeafNode* Split(int);
   void SortedArray();
   void quickSort(int*, int, int);
+  void ShiftValueToLeft(int);
+  void ShiftValueToRight(int);
+  void DeleteFirstNodeFromLeaf();
+  void DeleteLastNodeFromLeaf(int);
 }; //LeafNode class
 
 #endif
