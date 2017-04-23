@@ -1,3 +1,4 @@
+//Huajun Chai, 998584845
 #ifndef InternalNodeH
   #define InternalNodeH
 
@@ -8,7 +9,7 @@ class InternalNode:public BTreeNode
   int internalSize;
   BTreeNode **children;
   int *keys;
-public:
+public://
   InternalNode(int ISize, int LSize, InternalNode *p,
     BTreeNode *left, BTreeNode *right);
   int getMinimum()const;
@@ -17,6 +18,10 @@ public:
   void insert(BTreeNode *oldRoot, BTreeNode *node2); // if root splits use this
   void insert(BTreeNode *newNode); // from a sibling
   void print(Queue <BTreeNode*> &queue);
+  //added
+  int findIndex(int value);
+  void setChildren(int num, int pos, BTreeNode* childNode);
+  InternalNode* split(int pos, BTreeNode* newCreatedNode);
 }; // InternalNode class
 
 #endif

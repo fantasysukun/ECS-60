@@ -44,7 +44,7 @@ LeafNode* LeafNode::insert(int value)
 			cout << "error 2";
 		}
 		else {
-			cout << "good";
+			//cout << "good";
 			return Split(value); //Split
 		}
 	}
@@ -62,25 +62,30 @@ void LeafNode::print(Queue <BTreeNode*> &queue)
 
 //Split
 LeafNode* LeafNode::Split(int value) {
-	/*
+	
 	LeafNode* newNode = new LeafNode(leafSize, NULL, NULL, NULL);
 
 	//Normal case
 	newNode->setLeftSibling(this);
 	setLeftSibling(newNode);
-	for (int i = count / 2; i < count; i++) {
-		newNode->insert(values[i]);
-		count--;
-	}
-	if (value > values[count / 2]) {
+
+	if (value > values[(int)ceil(count / 2)]) {
+		for (int i = (int)ceil(count / 2) + 1; i < count; i++) {
+			newNode->insert(values[i]);
+			count--;
+		}
 		newNode->insert(value);
 	}
 	else {
+		for (int i = (int)ceil(count / 2); i < count; i++) {
+			newNode->insert(values[i]);
+			count--;
+		}
 		insert(value);
 	}
 	return newNode;
-	*/
-
+	
+	/*
 	LeafNode* newNode = new LeafNode(leafSize, NULL, NULL, NULL);
 	//set all pointers
 	BTreeNode* originalRight = getRightSibling();
@@ -121,6 +126,7 @@ LeafNode* LeafNode::Split(int value) {
 	}
 	//
 	return newNode;
+	*/
 }
 
 //Sorted Array using Insertion Sort
