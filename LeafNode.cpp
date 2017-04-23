@@ -69,15 +69,15 @@ LeafNode* LeafNode::Split(int value) {
 	newNode->setLeftSibling(this);
 	setLeftSibling(newNode);
 
-	if (value > values[(int)ceil(count / 2)]) {
-		for (int i = (int)ceil(count / 2) + 1; i < count; i++) {
+	if (value > values[(int)ceil(double(leafSize) / 2)]) {
+		for (int i = (int)ceil(double(leafSize) / 2); i < leafSize; i++) {
 			newNode->insert(values[i]);
 			count--;
 		}
 		newNode->insert(value);
 	}
 	else {
-		for (int i = (int)ceil(count / 2); i < count; i++) {
+		for (int i = (int)ceil(double(leafSize) / 2); i < leafSize; i++) {
 			newNode->insert(values[i]);
 			count--;
 		}
