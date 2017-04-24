@@ -34,6 +34,18 @@ InternalNode* InternalNode::insert(int value)
 {
 	//cout << "insert1 \n";
 	int pos = count - 1;
+	for (int i = 0; i < pos; i++) {
+		if (value < keys[i]) {
+			BTreeNode *newNode = children[i]->insert(value);
+			keys[i] = children[i]->getMinimum();
+		}
+		else if (value > keys[pos]){
+			BTreeNode *newNode = children[pos]->insert(value);
+			keys[pos] = children[pos]->getMinimum();
+		}
+	}
+
+	/*
 	while(value <= keys[pos] && pos > 0) //Find the right pos for insert value
     {
         --pos;
@@ -48,7 +60,7 @@ InternalNode* InternalNode::insert(int value)
 	else{ //If count >= internalsize, pass to left or right with split
 
 	}
-
+	*/
 
 	return NULL; // to avoid warnings for now.
 } // InternalNode::insert()// students must write this
