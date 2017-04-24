@@ -35,7 +35,6 @@ LeafNode* LeafNode::insert(int value)
 	}
 	else {
 		if (getLeftSibling() != NULL && getLeftSibling()->getCount() < leafSize) { //Checking LeftSibling
-			cout << "Running /n";
 			ShiftValueToLeft(value);
 			return NULL;
 		}
@@ -63,24 +62,50 @@ void LeafNode::print(Queue <BTreeNode*> &queue)
 //Split
 LeafNode* LeafNode::Split(int value) {
 	
+	
 	LeafNode* newNode = new LeafNode(leafSize, NULL, NULL, NULL);
-
-	setRightSibling(newNode); //New LeftNode will always on the right of the originalNode.
-	newNode->setLeftSibling(this);
-
 	//No need to worry about LeftSibling since it is split. The LeftSibling is eirther full or null.
 	BTreeNode* CurrentRightSibling = getRightSibling();
+
+	setRightSibling(newNode); //New LeftNode will always on the right of the originalNode.
+	newNode->setParent(parent); //update newNode to its parent
+
 	if (CurrentRightSibling == NULL) //If the RightSibling is null
 	{
 		newNode->setRightSibling(NULL);
+		newNode->setLeftSibling(this);
 	}
 	else
 	{
 		CurrentRightSibling->setLeftSibling(newNode); //New LeafNode will be on the left of the CurrentRightSibling
 		newNode->setRightSibling(CurrentRightSibling);
+		newNode->setLeftSibling(this);
 	}
 
-	newNode->setParent(parent); //update newNode to its parent
+	
+
+	
+	/*
+	LeafNode* newNode = new LeafNode(leafSize, NULL, NULL, NULL);
+	//set all pointers
+	BTreeNode* originalRight = getRightSibling();
+
+	newNode->setParent(parent);//if parent is full?
+	setRightSibling(newNode);
+	if (originalRight == NULL)//there is no node on the right
+	{
+		newNode->setRightSibling(NULL);
+		newNode->setLeftSibling(this);
+	}
+	else//there is node on the right
+	{
+		newNode->setRightSibling(originalRight);
+		newNode->setLeftSibling(this);
+		originalRight->setLeftSibling(newNode);
+	}
+	*/
+
+
 	bool inserted = false;
 	if (value > values[leafSize - 1]) { 
 		newNode->insert(value);
