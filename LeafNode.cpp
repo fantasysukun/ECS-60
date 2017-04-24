@@ -34,14 +34,12 @@ LeafNode* LeafNode::insert(int value)
 	}
 	else {
 		if (getLeftSibling() != NULL && getLeftSibling()->getCount() < leafSize) { //Checking LeftSibling
-			//ShiftValueToLeft(value);
-			//return NULL;
-			cout << "error 1";
+			ShiftValueToLeft(value);
+			return NULL;
 		}
 		else if (getRightSibling() != NULL && getRightSibling()->getCount() < leafSize) { //Checking RightSibling
-			//ShiftValueToRight(value);
-			//return NULL;
-			cout << "error 2";
+			ShiftValueToRight(value);
+			return NULL;
 		}
 		else {
 			//cout << "good";
@@ -69,17 +67,23 @@ LeafNode* LeafNode::Split(int value) {
 	newNode->setLeftSibling(this);
 	setLeftSibling(newNode);
 
-	if (value > values[(int)ceil(double(leafSize) / 2)]) {
+
+	if (value > values[leafSize - 1]) { 
+		newNode->insert(value);
 		for (int i = (int)ceil(double(leafSize) / 2); i < leafSize; i++) {
 			newNode->insert(values[i]);
 			count--;
 		}
-		newNode->insert(value);
 	}
 	else {
-		for (int i = (int)ceil(double(leafSize) / 2); i < leafSize; i++) {
-			newNode->insert(values[i]);
-			count--;
+		for (int i = leafSize; i >= (int)ceil(double(leafSize) / 2); i--) {
+			if (value < values[i]) {
+				newNode->insert(values[i]);
+				count--;
+			}
+			else {
+				newNode->insert(value);
+			}
 		}
 		insert(value);
 	}
