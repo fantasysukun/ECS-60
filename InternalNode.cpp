@@ -222,7 +222,8 @@ void InternalNode::setChildren(int num, int pos, BTreeNode* childNode)
 	}	
 }
 
-void InternalNode::ExplicitlyNode(int pos, InternalNode *newInternalNode, BTreeNode* newCreatedNode)
+
+void InternalNode::ExplicitlyNode(int pos, InternalNode* newInternalNode, BTreeNode* newCreatedNode)
 {
 		int center = (int)ceil((double)internalSize/2);
 	    int j = 0;
