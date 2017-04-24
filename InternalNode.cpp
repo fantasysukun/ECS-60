@@ -222,19 +222,40 @@ void InternalNode::setChildren(int num, int pos, BTreeNode* childNode)
 	}	
 }
 
+void InternalNode::ExplicitlyNode(int pos, InternalNode *newInternalNode, BTreeNode* newCreatedNode)
+{
+		int center = (int)ceil((double)internalSize/2);
+	    int j = 0;
+		int i = center;
+		for(; i <= pos; i++)
+		{
+			newInternalNode->setChildren(keys[i], j, children[i]);
+			setChildren(0, i, NULL);
+			j++;
+		}
+		newInternalNode->setChildren(newCreatedNode->getMinimum(), j, newCreatedNode);
+		j++;
+		for(i=pos+1;i<internalSize;i++)
+		{
+			newInternalNode->setChildren(keys[i], j, children[i]);
+			setChildren(0, i, NULL);
+			j++;
+		}
+}
+
 InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode)
 {
 	InternalNode *newInternalNode = new InternalNode(internalSize, leafSize, parent, this, this->getRightSibling());
-	//set all pointers
+	//No need to worry about LeftSibling since it is split. The LeftSibling is eirther full or null.
 	InternalNode* originalRight = (InternalNode*)getRightSibling();
 	newInternalNode->setParent(parent);
 	setRightSibling(newInternalNode);
-	if(originalRight == NULL)//there is no node on the right
+	if(originalRight == NULL)//If the RightSibling is null
 	{
 		newInternalNode->setRightSibling(NULL);
 		newInternalNode->setLeftSibling(this);
 	}
-	else//there is node on the right
+	else//New InternalNode will be on the left of the CurrentRightSibling
 	{
 		newInternalNode->setRightSibling(originalRight);
 		newInternalNode->setLeftSibling(this);
@@ -245,8 +266,6 @@ InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode)
 	if(pos < center - 1)
 	{
 		int j = 0;
-		//children[center - 1]->getLeftSibling()->setRightSibling(NULL);
-		//children[center - 1]->setLeftSibling(NULL);
 		for(int i = center - 1; i < internalSize; i++)
 		{
 			newInternalNode->setChildren(keys[i], j, children[i]);
@@ -265,8 +284,6 @@ InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode)
 	}
 	else if(pos == center - 1)//6
 	{
-		//children[center - 1]->setRightSibling(NULL);
-		//newCreatedNode->setLeftSibling(NULL);
 		newInternalNode->setChildren(newCreatedNode->getMinimum(), 0, newCreatedNode);
 		int j = 1;
 		for(int i = center; i < internalSize; i++)
@@ -278,9 +295,7 @@ InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode)
 	}
 	else//pos > center - 1. here we need to explictly consider *ret
 	{
-		int j = 0;
-		//children[center - 1]->setRightSibling(NULL);
-		//children[center]->setLeftSibling(NULL);
+		/*int j = 0;
 		int i = center;
 		for(; i <= pos; i++)
 		{
@@ -295,7 +310,9 @@ InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode)
 			newInternalNode->setChildren(keys[i], j, children[i]);
 			setChildren(0, i, NULL);
 			j++;
-		}
+		}*/
+		ExplicitlyNode(pos, newInternalNode, newCreatedNode);
 	}
 	return newInternalNode;
 }
+
