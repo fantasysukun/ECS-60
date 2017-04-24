@@ -20,7 +20,7 @@ public:
   void ShiftValueToLeft(int);
   void ShiftValueToRight(int);
   void DeleteFirstNodeFromLeaf();
-  void DeleteLastNodeFromLeaf(int);
+  void ReplaceNewValueIntoLeafNode(int, LeafNode*);
 }; //LeafNode class
 
 #endif
