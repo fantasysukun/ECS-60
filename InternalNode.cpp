@@ -22,125 +22,19 @@ int InternalNode::getMinimum()const
 
 InternalNode* InternalNode::insert(int value)
 {
-	int i = 0;
-	int k = 0;
-	for (; i < internalSize; i++)
-	{
-		if (value < keys[i] || (i + 1 == count && value > keys[count - 1]))
-		{
-			if (i == 0 || (i + 1 == count && value > keys[count - 1]))
-				i++;
-			k = i - 1;
-			BTreeNode* ret = children[k]->insert(value);
-			keys[k] = children[k]->getMinimum();
-			if (getLeftSibling() != NULL)
-			{
-				InternalNode* left = (InternalNode*)getLeftSibling();
-				left->keys[left->count - 1] = left->children[left->count - 1]->getMinimum();
-			}
-			if (getRightSibling() != NULL)
-			{
-				InternalNode* right = (InternalNode*)getRightSibling();
-				right->keys[0] = right->children[0]->getMinimum();
-			}
-			if (k == 0 && count > 1)
-				keys[k + 1] = children[k + 1]->getMinimum();
-			else if (k == (count - 1) && count > 1)
-				keys[k - 1] = children[k - 1]->getMinimum();
-			else if (count > 1)
-			{
-				keys[k + 1] = children[k + 1]->getMinimum();
-				keys[k - 1] = children[k - 1]->getMinimum();
-			}
-			else
-			{
-				//do nothing
-			}
-			if (ret == NULL)
-			{
-				return NULL;
-			}
-			else
-			{
-				if (this->count < internalSize)
-				{
-					int i = count - 1;
-					for (; i >= k + 1; i--)
-					{
-						children[i + 1] = children[i];
-						keys[i + 1] = keys[i];
-					}
-					children[k + 1] = ret;
-					keys[k + 1] = ret->getMinimum();
-					children[k + 1]->setParent(this);
-					count++;
-					return NULL;
-				}
-				else
-				{
-					if (getLeftSibling() != NULL && getLeftSibling()->getCount() < internalSize)
-					{
-						InternalNode* leftSib = (InternalNode*)getLeftSibling();
-						leftSib->children[leftSib->count] = children[0];
-						leftSib->keys[leftSib->count] = children[0]->getMinimum();
-						leftSib->count++;
-						children[0]->setParent(leftSib);
+	int pos = count - 1;
 
-						int i = 0;
-						for (; i < k; i++)
-						{
-							children[i] = children[i + 1];
-							keys[i] = keys[i + 1];
-						}
-						children[i] = ret;
-						keys[i] = ret->getMinimum();
-						ret->setParent(this);
-						return NULL;
-					}
-					else
-					{
-						if (getRightSibling() != NULL && getRightSibling()->getCount() < internalSize)
-						{
-							InternalNode* rightSib = (InternalNode*)getRightSibling();
-							int i = rightSib->count - 1;
-							for (; i >= 0; i--)
-							{
-								rightSib->children[i + 1] = rightSib->children[i];
-								rightSib->keys[i + 1] = rightSib->keys[i];
-							}
-							if (k == count - 1)
-							{
-								rightSib->children[0] = ret;
-								rightSib->keys[0] = ret->getMinimum();
-								children[count - 1]->setRightSibling(NULL);
-							}
-							else
-							{
-								rightSib->children[0] = children[count - 1];
-								rightSib->keys[0] = children[count - 1]->getMinimum();
-								for (i = count - 2; i > k; i--)
-								{
-									children[i + 1] = children[i];
-									keys[i + 1] = keys[i];
-								}
-								children[i + 1] = ret;
-								keys[i + 1] = ret->getMinimum();
-								ret->setParent(this);
-							}
-							rightSib->children[0]->setParent(this);
-							rightSib->count++;
+	//Find the right pos for insert node
+	while(value <= keys[pos] && pos > 0)
+    {
+        --pos;
+    }
+		
 
-							return NULL;
-						}
-						else
-						{
-							return split(k, ret);
-						}
-					}
-				}
-			}
-		}
-	}
+	BTreeNode *newNode = children[pos]->insert(value);
+	keys[pos] = children[pos]->getMinimum();
+
+
 	return NULL; // to avoid warnings for now.
 } // InternalNode::insert()// students must write this
 
