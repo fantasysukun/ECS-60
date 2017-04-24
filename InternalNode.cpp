@@ -161,13 +161,16 @@ InternalNode* InternalNode::insert(int value)//This function insert the value to
 
 void InternalNode::insert(BTreeNode *oldRoot, BTreeNode *node2)
 {
+	// Node must be the root, and node1
+    // students must write this
 	children[0]=oldRoot;
+	children[0]->setParent(this);
 	children[1]=node2;
+	children[1]->setParent(this);
 	keys[0] = oldRoot->getMinimum();
 	keys[1] = node2->getMinimum();
 	count = 2;
-	// Node must be the root, and node1
-  // students must write this
+	
 } // InternalNode::insert()
 
 void InternalNode::insert(BTreeNode *newNode) // from a sibling
