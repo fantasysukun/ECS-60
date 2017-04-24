@@ -31,9 +31,11 @@ LeafNode* LeafNode::insert(int value)
 		values[count] = value;
 		count++;
 		SortedArray();
+		return NULL;
 	}
 	else {
 		if (getLeftSibling() != NULL && getLeftSibling()->getCount() < leafSize) { //Checking LeftSibling
+			cout << "Running /n";
 			ShiftValueToLeft(value);
 			return NULL;
 		}
@@ -79,7 +81,7 @@ LeafNode* LeafNode::Split(int value) {
 	}
 
 	newNode->setParent(parent); //update newNode to its parent
-
+	bool inserted = false;
 	if (value > values[leafSize - 1]) { 
 		newNode->insert(value);
 		for (int i = (int)ceil(double(leafSize) / 2); i < leafSize; i++) {
@@ -98,9 +100,14 @@ LeafNode* LeafNode::Split(int value) {
 			else {
 				newNode->insert(value);
 				tempCount--;
+				inserted = true;
+				cout << "inserted: " << inserted;
 			}
 		}
-		//insert(value);
+		if (tempCount == 0 && inserted == false) {
+			cout << "value: " << value;
+			insert(value);
+		}
 	}
 	return newNode;
 	
@@ -177,7 +184,7 @@ void LeafNode::ShiftValueToRight(int value) {
 
 //Delete the first value from the leaf
 void LeafNode::DeleteFirstNodeFromLeaf() {
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count - 1; i++) {
 		values[i] = values[i + 1];
 	}
 	count--;
