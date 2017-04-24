@@ -32,6 +32,7 @@ void InternalNode::addInMid(int pos, BTreeNode *newNode) {
 
 InternalNode* InternalNode::insert(int value)
 {
+	//cout << "insert1 \n";
 	int pos = count - 1;
 	while(value <= keys[pos] && pos > 0) //Find the right pos for insert value
     {
@@ -45,18 +46,6 @@ InternalNode* InternalNode::insert(int value)
 		}
 	}
 	else{ //If count >= internalsize, pass to left or right with split
-		int last = count - 1;
-		BTreeNode *originalNode = newNode;
-		if((children[last]->getMinimum()) > (originalNode->getMinimum())){
-			originalNode = children[last];
-			for (int i = count - 1; i > pos; i--){
-				children[i + 1] = children[i];
-				keys[i + 1] = children[i + 1]->getMinimum();
-			}
-			children[pos + 1] = newNode;
-			keys[pos + 1] = children[pos + 1]->getMinimum();
-		}
-
 
 	}
 
@@ -66,6 +55,7 @@ InternalNode* InternalNode::insert(int value)
 
 void InternalNode::insert(BTreeNode *oldRoot, BTreeNode *node2)
 {
+	cout << "insert2 \n";
 	// Node must be the root, and node1
     
 	//Setup children
@@ -83,6 +73,7 @@ void InternalNode::insert(BTreeNode *oldRoot, BTreeNode *node2)
 
 void InternalNode::insert(BTreeNode *newNode) // from a sibling
 {
+	cout << "insert3 \n";
 	children[count] = newNode;
 	count++;
   // students may write this
@@ -118,6 +109,8 @@ void InternalNode::setChildren(int num, int pos, BTreeNode* childNode)
 }
 
 InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode) {
+
+	cout << "split \n";
 	InternalNode *newInternalNode = new InternalNode(internalSize, leafSize, parent, this, this->getRightSibling());
 	//No need to worry about LeftSibling since it is split. The LeftSibling is eirther full or null.
 	InternalNode* CurrentRightSibling = (InternalNode*)getRightSibling();
@@ -134,6 +127,7 @@ InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode) {
 		newInternalNode->setRightSibling(CurrentRightSibling);
 	}
 
+	/*
 	if (pos < (int)ceil( (double)internalSize) / 2 - 1) {
 		FirstCase(pos, newInternalNode, newCreatedNode);
 	}
@@ -143,6 +137,7 @@ InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode) {
 	else {
 		ThirdCase(pos, newInternalNode, newCreatedNode);
 	}
+	*/
 	return newInternalNode;
 }
 
