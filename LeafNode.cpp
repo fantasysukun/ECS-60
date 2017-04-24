@@ -63,10 +63,22 @@ LeafNode* LeafNode::Split(int value) {
 	
 	LeafNode* newNode = new LeafNode(leafSize, NULL, NULL, NULL);
 
-	//Normal case
+	setRightSibling(newNode); //New LeftNode will always on the right of the originalNode.
 	newNode->setLeftSibling(this);
-	setLeftSibling(newNode);
 
+	//No need to worry about LeftSibling since it is split. The LeftSibling is eirther full or null.
+	BTreeNode* CurrentRightSibling = getRightSibling();
+	if (CurrentRightSibling == NULL) //If the RightSibling is null
+	{
+		newNode->setRightSibling(NULL);
+	}
+	else
+	{
+		CurrentRightSibling->setLeftSibling(newNode); //New LeafNode will be on the left of the CurrentRightSibling
+		newNode->setRightSibling(CurrentRightSibling);
+	}
+
+	newNode->setParent(parent); //update newNode to its parent
 
 	if (value > values[leafSize - 1]) { 
 		newNode->insert(value);
@@ -88,7 +100,7 @@ LeafNode* LeafNode::Split(int value) {
 				tempCount--;
 			}
 		}
-		insert(value);
+		//insert(value);
 	}
 	return newNode;
 	
@@ -159,7 +171,7 @@ void LeafNode::ShiftValueToLeft(int value) {
 
 //Shift the Value to the Right Sibling
 void LeafNode::ShiftValueToRight(int value) {
-	DeleteFirstNodeFromLeaf();
+	DeleteLastNodeFromLeaf(value);
 	insert(value);
 }
 
@@ -173,11 +185,11 @@ void LeafNode::DeleteFirstNodeFromLeaf() {
 
 //Delete the last value from the leaf
 void LeafNode::DeleteLastNodeFromLeaf(int value) {
-	if (values[count] < value) {
+	if (values[leafSize - 1] < value) {
 		getRightSibling()->insert(value);
 	}
 	else {
-		getRightSibling()->insert(count);
+		getRightSibling()->insert(values[leafSize - 1]);
 	}
 	count--;
 }
