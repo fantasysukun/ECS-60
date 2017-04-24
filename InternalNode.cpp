@@ -44,7 +44,19 @@ InternalNode* InternalNode::insert(int value)
 			addInMid(pos, newNode);
 		}
 	}
-	else{
+	else{ //If count >= internalsize, pass to left or right with split
+		int last = count - 1;
+		BTreeNode *originalNode = newNode;
+		if((children[last]->getMinimum()) > (originalNode->getMinimum())){
+			originalNode = children[last];
+			for (int i = count - 1; i > pos; i--){
+				children[i + 1] = children[i];
+				keys[i + 1] = children[i + 1]->getMinimum();
+			}
+			children[pos + 1] = newNode;
+			keys[pos + 1] = children[pos + 1]->getMinimum();
+		}
+
 
 	}
 
@@ -139,8 +151,16 @@ void InternalNode::FirstCase(int pos, InternalNode *newInternalNode, BTreeNode *
 
 	int j = 0;
 	for (int i = (int)ceil((double)internalSize) / 2 - 1; i < internalSize; i++) {
-		newInternalNode->setChildren(keys[i], j, children[i]);
-		setChildren(0, i, NULL);
+		//newInternalNode->setChildren(keys[i], j, children[i]);
+		//setChildren(0, i, NULL);
+		newInternalNode->keys[pos] = keys[i];
+		newInternalNode->children[pos] = children[i];
+		if (newInternalNode->children[i] == NULL) count--;
+		else {
+			children[i]->setParent(this);
+			count++;
+		}
+		keys[i] = 0; children[i] = NULL; count--;
 		j++;
 	}
 	for (int i = (int)ceil((double)internalSize) / 2 - 2; i > pos + 1; i--) {
