@@ -19,12 +19,15 @@ public://
   void print(Queue <BTreeNode*> &queue);
 
   //added
+  bool CheckChilrenSplitCondition(BTreeNode *newNode);
+  void AddNewInternalNode(int, BTreeNode*);
+
   void setChildren(int, int, BTreeNode*);
   InternalNode* split(int, BTreeNode*);
   void FirstCase(int, InternalNode*, BTreeNode*);
   void SecendCase(int, InternalNode*, BTreeNode*);
   void ThirdCase(int, InternalNode*, BTreeNode*);
-  void addInMid(int pos, BTreeNode *newNode);
+  
 }; // InternalNode class
 
 #endif

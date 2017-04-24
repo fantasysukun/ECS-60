@@ -20,50 +20,84 @@ int InternalNode::getMinimum()const
     return 0;
 } // InternalNode::getMinimum()
 
-void InternalNode::addInMid(int pos, BTreeNode *newNode) {
+void InternalNode::AddNewInternalNode(int pos, BTreeNode *newNode) {
 	for (int i = count - 1; i > pos; i--){
 		children[i + 1] = children[i];
-		keys[i + 1] = children[i + 1]->getMinimum();
+		keys[i + 1] = keys[i];
 	}
-	children[pos + 1] = newNode;
-	keys[pos + 1] = children[pos + 1]->getMinimum();
+	children[pos + 1] = newNode; ///bug
+	keys[pos + 1] = newNode->getMinimum();
+	children[pos + 1]->setParent(this);
 	count++;
 }
 
 InternalNode* InternalNode::insert(int value)
 {
-	//cout << "insert1 \n";
+	cout << "insert1 \n";
 	int pos = count - 1;
-	for (int i = 0; i < pos; i++) {
+	cout << "pos: " << pos << " \n";
+	for (int i = 0; i <= pos; i++) {
 		if (value < keys[i]) {
-			BTreeNode *newNode = children[i]->insert(value);
+
+			BTreeNode *newNode = children[i]->insert(value); 
 			keys[i] = children[i]->getMinimum();
+
+			if (this->getCount() < internalSize && newNode != NULL) { // ewNode != NULL means Split
+				cout << "1 \n";
+				AddNewInternalNode(i, newNode);
+			}
+			/*
+			else { //Current Chilren is full
+				cout << "2 \n";
+				BTreeNode *newNode = children[i]->insert(value);
+				keys[i] = children[i]->getMinimum();
+				if (CheckChilrenSplitCondition(children[i])) {
+					AddNewInternalNode(i, value);
+				}
+				//Check LeftSibling
+
+				//Check RightSibling
+				//Check Split
+			}
+			*/
 		}
-		else if (value > keys[pos]){
+		else if (value > keys[pos] && i == pos){
+			cout << "3 \n";
 			BTreeNode *newNode = children[pos]->insert(value);
 			keys[pos] = children[pos]->getMinimum();
+
+			if (this->getCount() < internalSize && newNode != NULL) {
+				cout << "4 \n";
+				AddNewInternalNode(pos, newNode);
+			}
+			/*
+			else {
+				cout << "5 \n";
+				if (CheckChilrenSplitCondition(children[pos])) {
+					BTreeNode *newNode = children[pos]->insert(value);
+					keys[pos] = children[pos]->getMinimum();
+					AddNewInternalNode(pos, value);
+				}
+				//Check LeftSibling
+				//Check RightSibling
+				//Check Split
+			}
+			*/
 		}
 	}
-
-	/*
-	while(value <= keys[pos] && pos > 0) //Find the right pos for insert value
-    {
-        --pos;
-    }
-	BTreeNode *newNode = children[pos]->insert(value);
-	keys[pos] = children[pos]->getMinimum();
-	if(newNode){
-		if(count < internalSize){ //Need to add new internalnode
-			addInMid(pos, newNode);
-		}
-	}
-	else{ //If count >= internalsize, pass to left or right with split
-
-	}
-	*/
 
 	return NULL; // to avoid warnings for now.
 } // InternalNode::insert()// students must write this
+
+bool InternalNode::CheckChilrenSplitCondition(BTreeNode *newNode) {
+	if ((newNode->getLeftSibling() != NULL && newNode->getLeftSibling()->getCount() < internalSize) &&
+		(newNode->getRightSibling() != NULL && newNode->getRightSibling()->getCount() < internalSize) ) {
+		return true;
+	}
+	else{
+		return false;
+	}
+}
 
 void InternalNode::insert(BTreeNode *oldRoot, BTreeNode *node2)
 {
@@ -72,13 +106,14 @@ void InternalNode::insert(BTreeNode *oldRoot, BTreeNode *node2)
     
 	//Setup children
 	children[0] = oldRoot;
-	children[0]->setParent(this);
+	//children[0]->setParent(this);
 	children[1] = node2;
-	children[1]->setParent(this);
+	//children[1]->setParent(this);
 
 	//Setup keys
 	keys[0] = oldRoot->getMinimum();
 	keys[1] = node2->getMinimum();
+
 	count = 2;
   // students must write this
 } // InternalNode::insert()
