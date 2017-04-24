@@ -19,9 +19,8 @@ public://
   void print(Queue <BTreeNode*> &queue);
 
   //added
-  int findIndex(int);
   void setChildren(int, int, BTreeNode*);
-  InternalNode* split(int, BTreeNode* );
+  InternalNode* split(int, BTreeNode*);
   void ExplicitlyNode(int, InternalNode*, BTreeNode*);
 }; // InternalNode class
 

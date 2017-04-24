@@ -1,4 +1,3 @@
-//Huajun Chai, 998584845
 #include <iostream>
 #include "InternalNode.h"
 #include <math.h>
@@ -193,20 +192,6 @@ void InternalNode::print(Queue <BTreeNode*> &queue)
     queue.enqueue(children[i]);
 
 } // InternalNode::print()
-
-//added
-int InternalNode::findIndex(int value)
-{
-	if(value < keys[0])
-		return 0;
-	int i=0;
-	for(;i < internalSize;i++)
-	{
-		if(value < keys[i])
-			return (i-1);
-	}
-	return (i-1);
-}
 
 void InternalNode::setChildren(int num, int pos, BTreeNode* childNode)
 {
