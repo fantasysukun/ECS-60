@@ -20,44 +20,42 @@ int InternalNode::getMinimum()const
     return 0;
 } // InternalNode::getMinimum()
 
-InternalNode* InternalNode::insert(int value)//This function insert the value to internal nodes
+InternalNode* InternalNode::insert(int value)
 {
 	int i = 0;
-	while (int i = 0, i < internalSize; i++)
+	int k = 0;
+	for (; i < internalSize; i++)
 	{
 		if (value < keys[i] || (i + 1 == count && value > keys[count - 1]))
 		{
 			if (i == 0 || (i + 1 == count && value > keys[count - 1]))
 				i++;
-
-			pos = i - 1;
-			BTreeNode* ret = children[pos]->insert(value);
-			keys[pos] = children[pos]->getMinimum();
-
-			if (getLeftSibling() != NULL) //Left Sibling has node
+			k = i - 1;
+			BTreeNode* ret = children[k]->insert(value);
+			keys[k] = children[k]->getMinimum();
+			if (getLeftSibling() != NULL)
 			{
 				InternalNode* left = (InternalNode*)getLeftSibling();
 				left->keys[left->count - 1] = left->children[left->count - 1]->getMinimum();
 			}
-			if (getRightSibling() != NULL) //Right Sibling has node
+			if (getRightSibling() != NULL)
 			{
 				InternalNode* right = (InternalNode*)getRightSibling();
 				right->keys[0] = right->children[0]->getMinimum();
 			}
-
-			if (pos == 0 && count > 1)
-				keys[pos + 1] = children[pos + 1]->getMinimum();
-			else if (pos == (count - 1) && count > 1)
-				keys[pos - 1] = children[pos - 1]->getMinimum();
+			if (k == 0 && count > 1)
+				keys[k + 1] = children[k + 1]->getMinimum();
+			else if (k == (count - 1) && count > 1)
+				keys[k - 1] = children[k - 1]->getMinimum();
+			else if (count > 1)
+			{
+				keys[k + 1] = children[k + 1]->getMinimum();
+				keys[k - 1] = children[k - 1]->getMinimum();
+			}
 			else
 			{
-				keys[pos + 1] = children[pos + 1]->getMinimum();
-				keys[pos - 1] = children[pos - 1]->getMinimum();
+				//do nothing
 			}
-			else{
-				return null;
-			}
-
 			if (ret == NULL)
 			{
 				return NULL;
@@ -67,14 +65,14 @@ InternalNode* InternalNode::insert(int value)//This function insert the value to
 				if (this->count < internalSize)
 				{
 					int i = count - 1;
-					while (; i >= pos + 1; i--)
+					for (; i >= k + 1; i--)
 					{
 						children[i + 1] = children[i];
 						keys[i + 1] = keys[i];
 					}
-					children[pos + 1] = ret;
-					keys[pos + 1] = ret->getMinimum();
-					children[pos + 1]->setParent(this);
+					children[k + 1] = ret;
+					keys[k + 1] = ret->getMinimum();
+					children[k + 1]->setParent(this);
 					count++;
 					return NULL;
 				}
@@ -88,7 +86,8 @@ InternalNode* InternalNode::insert(int value)//This function insert the value to
 						leftSib->count++;
 						children[0]->setParent(leftSib);
 
-						while (int i = 0; i < pos; i++)
+						int i = 0;
+						for (; i < k; i++)
 						{
 							children[i] = children[i + 1];
 							keys[i] = keys[i + 1];
@@ -98,50 +97,52 @@ InternalNode* InternalNode::insert(int value)//This function insert the value to
 						ret->setParent(this);
 						return NULL;
 					}
-					if (getRightSibling() != NULL && getRightSibling()->getCount() < internalSize)
+					else
 					{
-						InternalNode* rightSib = (InternalNode*)getRightSibling();
-						int i = rightSib->count - 1;
-						while (; i >= 0; i--)
+						if (getRightSibling() != NULL && getRightSibling()->getCount() < internalSize)
 						{
-							rightSib->children[i + 1] = rightSib->children[i];
-							rightSib->keys[i + 1] = rightSib->keys[i];
-						}
-						if (pos == count - 1)
-						{
-							rightSib->children[0] = ret;
-							rightSib->keys[0] = ret->getMinimum();
-							children[count - 1]->setRightSibling(NULL);
+							InternalNode* rightSib = (InternalNode*)getRightSibling();
+							int i = rightSib->count - 1;
+							for (; i >= 0; i--)
+							{
+								rightSib->children[i + 1] = rightSib->children[i];
+								rightSib->keys[i + 1] = rightSib->keys[i];
+							}
+							if (k == count - 1)
+							{
+								rightSib->children[0] = ret;
+								rightSib->keys[0] = ret->getMinimum();
+								children[count - 1]->setRightSibling(NULL);
+							}
+							else
+							{
+								rightSib->children[0] = children[count - 1];
+								rightSib->keys[0] = children[count - 1]->getMinimum();
+								for (i = count - 2; i > k; i--)
+								{
+									children[i + 1] = children[i];
+									keys[i + 1] = keys[i];
+								}
+								children[i + 1] = ret;
+								keys[i + 1] = ret->getMinimum();
+								ret->setParent(this);
+							}
+							rightSib->children[0]->setParent(this);
+							rightSib->count++;
+
+							return NULL;
 						}
 						else
 						{
-							rightSib->children[0] = children[count - 1];
-							rightSib->keys[0] = children[count - 1]->getMinimum();
-							for (i = count - 2; i > pos; i--)
-							{
-								children[i + 1] = children[i];
-								keys[i + 1] = keys[i];
-							}
-							children[i + 1] = ret;
-							keys[i + 1] = ret->getMinimum();
-							ret->setParent(this);
+							return split(k, ret);
 						}
-						rightSib->children[0]->setParent(this);
-						rightSib->count++;
-
-						return NULL;
 					}
-					else
-					{
-						return split(pos, ret);
-					}
-
 				}
 			}
 		}
 	}
 	return NULL; // to avoid warnings for now.
-}
+} // InternalNode::insert()// students must write this
 
 void InternalNode::insert(BTreeNode *oldRoot, BTreeNode *node2)
 {
@@ -213,28 +214,28 @@ InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode) {
 		newInternalNode->setRightSibling(CurrentRightSibling);
 	}
 
-	if (pos < (int)ceil( (double)internalSize / 2 - 1) ) {
+	if (pos < (int)ceil( (double)internalSize) / 2 - 1) {
 		FirstCase(pos, newInternalNode, newCreatedNode);
 	}
-	else if (pos == (int)ceil((double)internalSize / 2 - 1) {
-		SecondCase(pos, newInternalNode, newCreatedNode);
+	else if (pos == (int)ceil((double)internalSize) / 2 - 1) {
+		SecendCase(pos, newInternalNode, newCreatedNode);
 	}
 	else {
-		ExplicitlyNode(pos, newInternalNode, newCreatedNode);
+		ThirdCase(pos, newInternalNode, newCreatedNode);
 	}
 	return newInternalNode;
 }
 
-
-void InternalNode::FirstCase{int pos, InternalNode *newInternalNode, BTreeNode *newCreatedNode) {
+//Setup Children for the new internalNode
+void InternalNode::FirstCase(int pos, InternalNode *newInternalNode, BTreeNode *newCreatedNode) {
 
 	int j = 0;
-	for (int i = (int)ceil((double)internalSize / 2 - 1; i < internalSize; i++) {
+	for (int i = (int)ceil((double)internalSize) / 2 - 1; i < internalSize; i++) {
 		newInternalNode->setChildren(keys[i], j, children[i]);
 		setChildren(0, i, NULL);
 		j++;
 	}
-	for (int i = (int)ceil((double)internalSize / 2 - 2; i > pos + 1; i--) {
+	for (int i = (int)ceil((double)internalSize) / 2 - 2; i > pos + 1; i--) {
 		children[i + 1] = children[i];
 		keys[i + 1] = keys[i];
 	}
@@ -245,10 +246,10 @@ void InternalNode::FirstCase{int pos, InternalNode *newInternalNode, BTreeNode *
 }
 
 //Setup Children for the new internalNode
-void InternalNode::SecendCase{int pos, InternalNode *newInternalNode, BTreeNode *newCreatedNode) {
+void InternalNode::SecendCase(int pos, InternalNode *newInternalNode, BTreeNode *newCreatedNode) {
 	newInternalNode->setChildren(newCreatedNode->getMinimum(), 0, newCreatedNode);
 	int j = 1;
-	for (int i = (int)ceil((double)internalSize / 2; i < internalSize; i++) {
+	for (int i = (int)ceil((double)internalSize) / 2; i < internalSize; i++) {
 		newInternalNode->setChildren(keys[i], j, children[i]);
 		setChildren(0, i, NULL);
 		j++;
@@ -259,7 +260,7 @@ void InternalNode::SecendCase{int pos, InternalNode *newInternalNode, BTreeNode 
 void InternalNode::ThirdCase(int pos, InternalNode *newInternalNode, BTreeNode *newCreatedNode)
 {
 	int j = 0;
-	for (i = (int)ceil((double)internalSize / 2); i <= pos; i++) {
+	for (int i = (int)ceil((double)internalSize) / 2; i <= pos; i++) {
 		newInternalNode->setChildren(keys[i], j, children[i]);
 		setChildren(0, i, NULL);
 		j++;
@@ -267,7 +268,7 @@ void InternalNode::ThirdCase(int pos, InternalNode *newInternalNode, BTreeNode *
 
 	newInternalNode->setChildren(newCreatedNode->getMinimum(), j, newCreatedNode);
 	j++;
-	for (i = pos + 1; i<internalSize; i++) {
+	for (int i = pos + 1; i<internalSize; i++) {
 		newInternalNode->setChildren(keys[i], j, children[i]);
 		setChildren(0, i, NULL);
 		j++;
