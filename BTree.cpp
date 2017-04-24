@@ -10,21 +10,9 @@ BTree::BTree(int ISize, int LSize):internalSize(ISize), leafSize(LSize)
   root = new LeafNode(LSize, NULL, NULL, NULL);
 } // BTree::BTree()
 
-
 void BTree::insert(const int value)
 {
 	BTreeNode* newNode = root->insert(value);
-	/*if (newNode != NULL)
-	{
-		BTreeNode *oldRoot = root;
-		//Need to change logic 
-		InternalNode *newRoot = new InternalNode(internalSize, leafSize, NULL, NULL, NULL);
-		newRoot->insert(oldRoot, newNode);//set new parent's property
-		oldRoot->setParent(newRoot);//set child point to parent
-		newNode->setParent(newRoot);
-		root = newRoot;
-		//Need to change logic 
-	}*/
 	if (newNode) 
 	{
 		InternalNode *newRoot = new InternalNode(internalSize, leafSize, NULL, NULL, NULL);
@@ -33,7 +21,6 @@ void BTree::insert(const int value)
 	}
   // students must write this
 } // BTree::insert()
-
 
 void BTree::print()
 {
