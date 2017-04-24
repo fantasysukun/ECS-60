@@ -20,19 +20,33 @@ int InternalNode::getMinimum()const
     return 0;
 } // InternalNode::getMinimum()
 
+void InternalNode::addInMid(int pos, BTreeNode *newNode) {
+	for (int i = count - 1; i > pos; i--){
+		children[i + 1] = children[i];
+		keys[i + 1] = children[i + 1]->getMinimum();
+	}
+	children[pos + 1] = newNode;
+	keys[pos + 1] = children[pos + 1]->getMinimum();
+	count++;
+}
+
 InternalNode* InternalNode::insert(int value)
 {
 	int pos = count - 1;
-
-	//Find the right pos for insert node
-	while(value <= keys[pos] && pos > 0)
+	while(value <= keys[pos] && pos > 0) //Find the right pos for insert value
     {
         --pos;
     }
-		
-
 	BTreeNode *newNode = children[pos]->insert(value);
 	keys[pos] = children[pos]->getMinimum();
+	if(newNode){
+		if(count < internalSize){ //Need to add new internalnode
+			addInMid(pos, newNode);
+		}
+	}
+	else{
+
+	}
 
 
 	return NULL; // to avoid warnings for now.

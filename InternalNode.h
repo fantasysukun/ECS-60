@@ -24,6 +24,7 @@ public://
   void FirstCase(int, InternalNode*, BTreeNode*);
   void SecendCase(int, InternalNode*, BTreeNode*);
   void ThirdCase(int, InternalNode*, BTreeNode*);
+  void addInMid(int pos, BTreeNode *newNode);
 }; // InternalNode class
 
 #endif
