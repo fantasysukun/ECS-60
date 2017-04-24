@@ -76,13 +76,16 @@ LeafNode* LeafNode::Split(int value) {
 		}
 	}
 	else {
-		for (int i = leafSize; i >= (int)ceil(double(leafSize) / 2); i--) {
+		int tempCount = (int)ceil(double(leafSize + 1) / 2);
+		for (int i = leafSize - 1; i >= 0 && tempCount > 0; i--) { 
 			if (value < values[i]) {
 				newNode->insert(values[i]);
 				count--;
+				tempCount--;
 			}
 			else {
 				newNode->insert(value);
+				tempCount--;
 			}
 		}
 		insert(value);
