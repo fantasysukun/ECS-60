@@ -69,42 +69,17 @@ LeafNode* LeafNode::Split(int value) {
 
 	setRightSibling(newNode); //New LeftNode will always on the right of the originalNode.
 	newNode->setParent(parent); //update newNode to its parent
+	newNode->setLeftSibling(this);
 
 	if (CurrentRightSibling == NULL) //If the RightSibling is null
 	{
 		newNode->setRightSibling(NULL);
-		newNode->setLeftSibling(this);
 	}
 	else
 	{
 		CurrentRightSibling->setLeftSibling(newNode); //New LeafNode will be on the left of the CurrentRightSibling
 		newNode->setRightSibling(CurrentRightSibling);
-		newNode->setLeftSibling(this);
 	}
-
-	
-
-	
-	/*
-	LeafNode* newNode = new LeafNode(leafSize, NULL, NULL, NULL);
-	//set all pointers
-	BTreeNode* originalRight = getRightSibling();
-
-	newNode->setParent(parent);//if parent is full?
-	setRightSibling(newNode);
-	if (originalRight == NULL)//there is no node on the right
-	{
-		newNode->setRightSibling(NULL);
-		newNode->setLeftSibling(this);
-	}
-	else//there is node on the right
-	{
-		newNode->setRightSibling(originalRight);
-		newNode->setLeftSibling(this);
-		originalRight->setLeftSibling(newNode);
-	}
-	*/
-
 
 	bool inserted = false;
 	if (value > values[leafSize - 1]) { 
@@ -126,58 +101,15 @@ LeafNode* LeafNode::Split(int value) {
 				newNode->insert(value);
 				tempCount--;
 				inserted = true;
-				cout << "inserted: " << inserted;
+				//cout << "inserted: " << inserted;
 			}
 		}
 		if (tempCount == 0 && inserted == false) {
-			cout << "value: " << value;
+			//cout << "value: " << value;
 			insert(value);
 		}
 	}
 	return newNode;
-	
-	/*
-	LeafNode* newNode = new LeafNode(leafSize, NULL, NULL, NULL);
-	//set all pointers
-	BTreeNode* originalRight = getRightSibling();
-
-	newNode->setParent(parent);//if parent is full?
-	setRightSibling(newNode);
-	if (originalRight == NULL)//there is no node on the right
-	{
-		newNode->setRightSibling(NULL);
-		newNode->setLeftSibling(this);
-	}
-	else//there is node on the right
-	{
-		newNode->setRightSibling(originalRight);
-		newNode->setLeftSibling(this);
-		originalRight->setLeftSibling(newNode);
-	}
-	//move numbers
-	int max = values[leafSize - 1];
-	if (max>value)
-	{
-		newNode->insert(max);
-		values[leafSize - 1] = 0;
-		count--;
-		insert(value);
-	}
-	else
-	{
-		newNode->insert(value);
-		//count--;
-	}
-	int center = (int)ceil(double(leafSize) / 2);
-	for (int i = center; i < leafSize; i++)
-	{
-		newNode->insert(values[i]);
-		values[i] = 0;//set the removed number to 0
-		count--;
-	}
-	//
-	return newNode;
-	*/
 }
 
 //Sorted Array using Insertion Sort
@@ -204,7 +136,6 @@ void LeafNode::ShiftValueToLeft(int value) {
 //Shift the Value to the Right Sibling
 void LeafNode::ShiftValueToRight(int value) {
 	DeleteLastNodeFromLeaf(value);
-	insert(value);
 }
 
 //Delete the first value from the leaf
@@ -222,6 +153,7 @@ void LeafNode::DeleteLastNodeFromLeaf(int value) {
 	}
 	else {
 		getRightSibling()->insert(values[leafSize - 1]);
+		count--;
+		insert(value);
 	}
-	count--;
 }
