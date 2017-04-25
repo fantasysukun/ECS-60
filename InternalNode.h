@@ -24,8 +24,9 @@ public://
   void KeysUpdate();
   void ReplaceNewValueIntoInternalNode(int, InternalNode*);
   void setChildren(int, int, BTreeNode*);
-  
-  
+  void ShiftValueToLeft(int, BTreeNode*);
+  void ShiftValueToRight(int, BTreeNode*);
+
   void FirstCase(int, InternalNode*, BTreeNode*);
   void SecendCase(int, InternalNode*, BTreeNode*);
   void ThirdCase(int, InternalNode*, BTreeNode*);
