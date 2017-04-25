@@ -60,7 +60,7 @@ InternalNode* InternalNode::insert(int value)
 					return NULL;
 				}
 				else {
-					return split(value, newNode); //Split
+					return split(i, newNode); //Split
 				}
 			}
 			return NULL;
@@ -87,7 +87,7 @@ InternalNode* InternalNode::insert(int value)
 					return NULL;
 				}
 				else {
-					return split(value, newNode); //Split
+					return split(pos, newNode); //Split
 				}
 			}
 			return NULL;
@@ -160,6 +160,7 @@ void InternalNode::setChildren(int num, int pos, BTreeNode* childNode)
 	}	
 }
 
+/*
 InternalNode* InternalNode::split(int value, BTreeNode *newCreatedNode) {
 
 	cout << "split \n";
@@ -200,6 +201,85 @@ InternalNode* InternalNode::split(int value, BTreeNode *newCreatedNode) {
 		ReplaceNewValueIntoInternalNode(value, newInternalNode);
 	}
 	
+	return newInternalNode;
+}
+*/
+
+InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode)
+{
+	InternalNode *newInternalNode = new InternalNode(internalSize, leafSize, parent, this, this->getRightSibling());
+	//set all pointers
+	InternalNode* originalRight = (InternalNode*)getRightSibling();
+	newInternalNode->setParent(parent);
+	setRightSibling(newInternalNode);
+	if (originalRight == NULL)//there is no node on the right
+	{
+		newInternalNode->setRightSibling(NULL);
+		newInternalNode->setLeftSibling(this);
+	}
+	else//there is node on the right
+	{
+		newInternalNode->setRightSibling(originalRight);
+		newInternalNode->setLeftSibling(this);
+		originalRight->setLeftSibling(newInternalNode);
+	}
+
+	int center = (int)ceil((double)internalSize / 2);
+	if (pos < center - 1)
+	{
+		int j = 0;
+		//children[center - 1]->getLeftSibling()->setRightSibling(NULL);
+		//children[center - 1]->setLeftSibling(NULL);
+		for (int i = center - 1; i < internalSize; i++)
+		{
+			newInternalNode->setChildren(keys[i], j, children[i]);
+			setChildren(0, i, NULL);
+			j++;
+		}
+		for (int i = center - 2; i > pos + 1; i--)
+		{
+			children[i + 1] = children[i];
+			keys[i + 1] = keys[i];
+		}
+		children[pos + 1] = newCreatedNode;
+		keys[pos + 1] = newCreatedNode->getMinimum();
+		newCreatedNode->setParent(this);
+		count++;
+	}
+	else if (pos == center - 1)//6
+	{
+		//children[center - 1]->setRightSibling(NULL);
+		//newCreatedNode->setLeftSibling(NULL);
+		newInternalNode->setChildren(newCreatedNode->getMinimum(), 0, newCreatedNode);
+		int j = 1;
+		for (int i = center; i < internalSize; i++)
+		{
+			newInternalNode->setChildren(keys[i], j, children[i]);
+			setChildren(0, i, NULL);
+			j++;
+		}
+	}
+	else//pos > center - 1. here we need to explictly consider *ret
+	{
+		int j = 0;
+		//children[center - 1]->setRightSibling(NULL);
+		//children[center]->setLeftSibling(NULL);
+		int i = center;
+		for (; i <= pos; i++)
+		{
+			newInternalNode->setChildren(keys[i], j, children[i]);
+			setChildren(0, i, NULL);
+			j++;
+		}
+		newInternalNode->setChildren(newCreatedNode->getMinimum(), j, newCreatedNode);
+		j++;
+		for (i = pos + 1; i<internalSize; i++)
+		{
+			newInternalNode->setChildren(keys[i], j, children[i]);
+			setChildren(0, i, NULL);
+			j++;
+		}
+	}
 	return newInternalNode;
 }
 
