@@ -19,12 +19,12 @@ public://
   void print(Queue <BTreeNode*> &queue);
 
   //added
-  bool CheckChilrenSplitCondition(BTreeNode *newNode);
   void AddNewInternalNode(int, BTreeNode*);
   InternalNode* split(int);
   void KeysUpdate();
-
+  void ReplaceNewValueIntoInternalNode(int, InternalNode*);
   void setChildren(int, int, BTreeNode*);
+  
   
   void FirstCase(int, InternalNode*, BTreeNode*);
   void SecendCase(int, InternalNode*, BTreeNode*);
