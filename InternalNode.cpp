@@ -40,7 +40,7 @@ InternalNode* InternalNode::insert(int value)
 		if (value < children[i]->getMinimum() || value < children[i + 1]->getMinimum() ) {
 			cout << "1 \n";
 			BTreeNode *newNode = children[i]->insert(value); 
-			keys[i] = children[i]->getMinimum();
+			KeysUpdate();
 
 			if (this->getCount() < internalSize && newNode != NULL) { // ewNode != NULL means Split
 				cout << "2 \n";
@@ -67,7 +67,7 @@ InternalNode* InternalNode::insert(int value)
 		else if (value > children[pos]->getMinimum() ){
 			cout << "3 \n";
 			BTreeNode *newNode = children[pos]->insert(value);
-			keys[pos] = children[pos]->getMinimum();
+			KeysUpdate();
 
 			if (this->getCount() < internalSize && newNode != NULL) {
 				cout << "4 \n";
@@ -95,6 +95,13 @@ InternalNode* InternalNode::insert(int value)
 
 	return NULL; // to avoid warnings for now.
 } // InternalNode::insert()// students must write this
+
+//update Keys
+void InternalNode::KeysUpdate() {
+	for (int i = 0; i < this->count; i++) {
+		keys[i] = children[i]->getMinimum();
+	}
+}
 
 bool InternalNode::CheckChilrenSplitCondition(BTreeNode *newNode) {
 	if ((newNode->getLeftSibling() != NULL && newNode->getLeftSibling()->getCount() < internalSize) &&

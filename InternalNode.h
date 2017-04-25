@@ -22,6 +22,7 @@ public://
   bool CheckChilrenSplitCondition(BTreeNode *newNode);
   void AddNewInternalNode(int, BTreeNode*);
   InternalNode* split(int);
+  void KeysUpdate();
 
   void setChildren(int, int, BTreeNode*);
   
