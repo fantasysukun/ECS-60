@@ -25,7 +25,7 @@ void InternalNode::AddNewInternalNode(int pos, BTreeNode *newNode) {
 		children[i + 1] = children[i];
 		keys[i + 1] = keys[i];
 	}
-	children[pos + 1] = newNode; ///bug
+	children[pos + 1] = newNode; 
 	keys[pos + 1] = newNode->getMinimum();
 	children[pos + 1]->setParent(this);
 	count++;
@@ -33,65 +33,59 @@ void InternalNode::AddNewInternalNode(int pos, BTreeNode *newNode) {
 
 InternalNode* InternalNode::insert(int value)
 {
-	//cout << "insert1 \n";
+	cout << "insert1 \n";
 	int pos = count - 1;
 	//cout << "pos: " << pos << " \n";
 	for (int i = 0; i <= pos; i++) {
 		if (value < children[i]->getMinimum() || value < children[i + 1]->getMinimum() ) {
-			//cout << "1 \n";
-			//cout << "value: " << value << "\n";
-			//cout << "keys[i]: " << keys[i] << "\n";
-			//cout << "keys[i+1]: " << keys[i+1] << "\n";
-
+			cout << "1 \n";
 			BTreeNode *newNode = children[i]->insert(value); 
-			//cout << "children[i]: " << children[i]->getCount() << "\n";
 			keys[i] = children[i]->getMinimum();
 
 			if (this->getCount() < internalSize && newNode != NULL) { // ewNode != NULL means Split
-				//cout << "2 \n";
+				cout << "2 \n";
 				AddNewInternalNode(i, newNode);
 				return NULL;
 			}
-			/*
-			else { //Current Chilren is full
-				cout << "2 \n";
-				BTreeNode *newNode = children[i]->insert(value);
-				keys[i] = children[i]->getMinimum();
-				if (CheckChilrenSplitCondition(children[i])) {
-					AddNewInternalNode(i, value);
+			else {
+				if (getLeftSibling() != NULL && getLeftSibling()->getCount() < internalSize) { //Checking LeftSibling
+					//ShiftValueToLeft(value);
+					return NULL;
 				}
-				//Check LeftSibling
-
-				//Check RightSibling
-				//Check Split
+				else if (getRightSibling() != NULL && getRightSibling()->getCount() < internalSize) { //Checking RightSibling
+					//ShiftValueToRight(value);
+					return NULL;
+				}
+				else {
+					return split(value); //Split
+				}
 			}
-			*/
 			return NULL;
 		}
 		else if (value > children[pos]->getMinimum() ){
-			//cout << "3 \n";
+			cout << "3 \n";
 			BTreeNode *newNode = children[pos]->insert(value);
 			keys[pos] = children[pos]->getMinimum();
 
 			if (this->getCount() < internalSize && newNode != NULL) {
-				//cout << "4 \n";
+				cout << "4 \n";
 				AddNewInternalNode(pos, newNode);
 				return NULL;
 			}
-			return NULL;
-			/*
 			else {
-				cout << "5 \n";
-				if (CheckChilrenSplitCondition(children[pos])) {
-					BTreeNode *newNode = children[pos]->insert(value);
-					keys[pos] = children[pos]->getMinimum();
-					AddNewInternalNode(pos, value);
+				if (getLeftSibling() != NULL && getLeftSibling()->getCount() < leafSize) { //Checking LeftSibling
+					//ShiftValueToLeft(value);
+					return NULL;
 				}
-				//Check LeftSibling
-				//Check RightSibling
-				//Check Split
+				else if (getRightSibling() != NULL && getRightSibling()->getCount() < leafSize) { //Checking RightSibling
+					//ShiftValueToRight(value);
+					return NULL;
+				}
+				else {
+					return split(value); //Split
+				}
 			}
-			*/
+			return NULL;
 		}
 	}
 
@@ -164,7 +158,7 @@ void InternalNode::setChildren(int num, int pos, BTreeNode* childNode)
 	}	
 }
 
-InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode) {
+InternalNode* InternalNode::split(int value) {
 
 	cout << "split \n";
 	InternalNode *newInternalNode = new InternalNode(internalSize, leafSize, parent, this, this->getRightSibling());
@@ -182,16 +176,16 @@ InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode) {
 		CurrentRightSibling->setLeftSibling(newInternalNode);//New InternalNode will be on the left of the CurrentRightSibling
 		newInternalNode->setRightSibling(CurrentRightSibling);
 	}
-
 	/*
-	if (pos < (int)ceil( (double)internalSize) / 2 - 1) {
-		FirstCase(pos, newInternalNode, newCreatedNode);
-	}
-	else if (pos == (int)ceil((double)internalSize) / 2 - 1) {
-		SecendCase(pos, newInternalNode, newCreatedNode);
+	if (value > values[leafSize - 1]) {
+		newInternalNode->insert(value);
+		for (int i = (int)ceil(double(leafSize) / 2); i < leafSize; i++) {
+			newNode->insert(values[i]);
+			count--;
+		}
 	}
 	else {
-		ThirdCase(pos, newInternalNode, newCreatedNode);
+		ReplaceNewValueIntoLeafNode(value, newNode);
 	}
 	*/
 	return newInternalNode;

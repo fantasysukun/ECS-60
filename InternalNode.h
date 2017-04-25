@@ -21,9 +21,10 @@ public://
   //added
   bool CheckChilrenSplitCondition(BTreeNode *newNode);
   void AddNewInternalNode(int, BTreeNode*);
+  InternalNode* split(int);
 
   void setChildren(int, int, BTreeNode*);
-  InternalNode* split(int, BTreeNode*);
+  
   void FirstCase(int, InternalNode*, BTreeNode*);
   void SecendCase(int, InternalNode*, BTreeNode*);
   void ThirdCase(int, InternalNode*, BTreeNode*);
