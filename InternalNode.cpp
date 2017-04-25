@@ -20,6 +20,7 @@ int InternalNode::getMinimum()const
     return 0;
 } // InternalNode::getMinimum()
 
+//Add new internalNode
 void InternalNode::AddNewInternalNode(int pos, BTreeNode *newNode) {
 	for (int i = count - 1; i > pos; i--){
 		children[i + 1] = children[i];
@@ -45,6 +46,7 @@ InternalNode* InternalNode::insert(int value)
 	return NULL; // to avoid warnings for now.
 } // InternalNode::insert()// students must write this
 
+//Add new Value into InternalNode
 InternalNode* InternalNode::AddvalueIntoInternalNode(int i, int pos, int value) {
 	BTreeNode *newNode = children[pos]->insert(value);
 	KeysUpdate();
@@ -179,51 +181,6 @@ void InternalNode::setChildren(int num, int pos, BTreeNode* childNode)
 	}	
 }
 
-/*
-InternalNode* InternalNode::split(int value, BTreeNode *newCreatedNode) {
-
-	cout << "split \n";
-	InternalNode *newInternalNode = new InternalNode(internalSize, leafSize, parent, this, this->getRightSibling());
-	//No need to worry about LeftSibling since it is split. The LeftSibling is eirther full or null.
-	InternalNode* CurrentRightSibling = (InternalNode*)getRightSibling();
-
-	setRightSibling(newInternalNode); //New InternalNode will always on the right of the originalNode.
-	newInternalNode->setParent(parent); //update newNode to its parent
-	newInternalNode->setLeftSibling(this);
-
-	if (CurrentRightSibling == NULL) {//If the RightSibling is null
-		newInternalNode->setRightSibling(NULL);
-	}
-	else {
-		CurrentRightSibling->setLeftSibling(newInternalNode);//New InternalNode will be on the left of the CurrentRightSibling
-		newInternalNode->setRightSibling(CurrentRightSibling);
-	}
-	
-	//ReplaceNewValueIntoInternalNode(value, newInternalNode);
-	
-	if (value > children[internalSize - 1]->getMinimum()) {
-		cout << "split 1\n";
-		
-		newInternalNode->insert(value);
-		cout << "newInternalNode: " << newInternalNode->getCount() << "/n";
-		int NewKeyindex = 1;
-		//int NewKeyValues = 0;
-		for (int i = (int)ceil(double(leafSize) / 2); i < leafSize; i++) {
-			newInternalNode->setChildren(keys[i], NewKeyindex, children[i]);
-			setChildren(0, i, NULL);
-			count--;
-			NewKeyindex++;
-		}
-	}
-	else {
-		cout << "split 2\n";
-		ReplaceNewValueIntoInternalNode(value, newInternalNode);
-	}
-	
-	return newInternalNode;
-}
-*/
-
 InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode)
 {
 	InternalNode *newInternalNode = new InternalNode(internalSize, leafSize, parent, this, this->getRightSibling());
@@ -257,7 +214,6 @@ InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode)
 	return newInternalNode;
 }
 
-
 //Replace New Value Into LeafNode
 void InternalNode::ReplaceNewValueIntoInternalNode(int value, InternalNode* newNode) {
 	bool inserted = false;
@@ -281,8 +237,6 @@ void InternalNode::ReplaceNewValueIntoInternalNode(int value, InternalNode* newN
 	if (tempCount == 0 && inserted == false) {
 		newNode->insert(value);
 	}
-
-
 }
 
 //Setup Children for the new internalNode
@@ -292,7 +246,7 @@ void InternalNode::FirstCase(int pos, InternalNode *newInternalNode, BTreeNode *
 	for (int i = (int)ceil((double)internalSize / 2) - 1; i < internalSize; i++)
 	{
 		newInternalNode->setChildren(keys[i], Newindex, children[i]);
-		setChildren(0, i, NULL);
+		keys[i] = 0; children[i] = NULL; count--;
 		Newindex++;
 	}
 
@@ -316,7 +270,7 @@ void InternalNode::SecendCase(int pos, InternalNode *newInternalNode, BTreeNode 
 	for (int i = (int)ceil((double)internalSize / 2); i < internalSize; i++)
 	{
 		newInternalNode->setChildren(keys[i], newindex, children[i]);
-		setChildren(0, i, NULL);
+		keys[i] = 0; children[i] = NULL; count--;
 		newindex++;
 	}
 }
@@ -329,7 +283,7 @@ void InternalNode::ThirdCase(int pos, InternalNode *newInternalNode, BTreeNode *
 	for (int i = (int)ceil((double)internalSize / 2); i <= pos; i++)
 	{
 		newInternalNode->setChildren(keys[i], newindex, children[i]);
-		setChildren(0, i, NULL);
+		keys[i] = 0; children[i] = NULL; count--;
 		newindex++;
 	}
 	newInternalNode->setChildren(newNode->getMinimum(), newindex, newNode);
@@ -337,7 +291,7 @@ void InternalNode::ThirdCase(int pos, InternalNode *newInternalNode, BTreeNode *
 	for (int i = pos + 1; i<internalSize; i++)
 	{
 		newInternalNode->setChildren(keys[i], newindex, children[i]);
-		setChildren(0, i, NULL);
+		keys[i] = 0; children[i] = NULL; count--;
 		newindex++;
 	}
 }
