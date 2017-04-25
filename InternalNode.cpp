@@ -36,7 +36,8 @@ InternalNode* InternalNode::insert(int value)
 {
 	int pos = count - 1;
 	for (int i = 0; i <= pos; i++) {
-		if (value < children[i]->getMinimum() || value < children[i + 1]->getMinimum() ) {
+		//if (value < children[i]->getMinimum() || value < children[i + 1]->getMinimum()) {
+		if (value < children[i]->getMinimum() ) {
 			return AddvalueIntoInternalNode(i, i, value);
 		}
 		else if (value > children[pos]->getMinimum() ){
@@ -48,7 +49,8 @@ InternalNode* InternalNode::insert(int value)
 
 //Add new Value into InternalNode
 InternalNode* InternalNode::AddvalueIntoInternalNode(int i, int pos, int value) {
-	BTreeNode *newNode = children[pos]->insert(value);
+
+	BTreeNode *newNode = (BTreeNode *)children[pos]->insert(value);
 	KeysUpdate();
 
 	if (this->getCount() < internalSize && newNode != NULL) {
@@ -56,7 +58,6 @@ InternalNode* InternalNode::AddvalueIntoInternalNode(int i, int pos, int value) 
 		return NULL;
 	}
 	else if (this->getCount() >= internalSize && newNode != NULL) {
-
 		if (getLeftSibling() != NULL && getLeftSibling()->getCount() < internalSize) { //Checking LeftSibling
 			ShiftValueToLeft(pos, newNode);
 			return NULL;
@@ -143,13 +144,6 @@ void InternalNode::insert(BTreeNode *oldRoot, BTreeNode *node2)
 
 	count = 2;
   // students must write this
-} // InternalNode::insert()
-
-void InternalNode::insert(BTreeNode *newNode) // from a sibling
-{
-	children[count] = newNode;
-	count++;
-  // students may write this
 } // InternalNode::insert()
 
 void InternalNode::print(Queue <BTreeNode*> &queue)
