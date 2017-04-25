@@ -27,7 +27,7 @@ public://
   void ShiftValueToLeft(int, BTreeNode*);
   void ShiftValueToRight(int, BTreeNode*);
   InternalNode* AddvalueIntoInternalNode(int, int pos, int value);
-
+  bool CheckChildrenCondition(int value, int i);
   void FirstCase(int, InternalNode*, BTreeNode*);
   void SecendCase(int, InternalNode*, BTreeNode*);
   void ThirdCase(int, InternalNode*, BTreeNode*);

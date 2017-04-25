@@ -36,8 +36,8 @@ InternalNode* InternalNode::insert(int value)
 {
 	int pos = count - 1;
 	for (int i = 0; i <= pos; i++) {
-		//if (value < children[i]->getMinimum() || value < children[i + 1]->getMinimum()) {
-		if (value < children[i]->getMinimum() ) {
+		if (value < children[i]->getMinimum() || CheckChildrenCondition(value, i)) {
+		//if (value < children[i]->getMinimum() ) {
 			return AddvalueIntoInternalNode(i, i, value);
 		}
 		else if (value > children[pos]->getMinimum() ){
@@ -46,6 +46,15 @@ InternalNode* InternalNode::insert(int value)
 	}
 	return NULL; // to avoid warnings for now.
 } // InternalNode::insert()// students must write this
+
+bool InternalNode::CheckChildrenCondition(int value, int i) {
+	if (children[i + 1] == NULL) {
+		return false;
+	}
+	else {
+		return (value < children[i + 1]->getMinimum() );
+	}
+}
 
 //Add new Value into InternalNode
 InternalNode* InternalNode::AddvalueIntoInternalNode(int i, int pos, int value) {
