@@ -60,7 +60,7 @@ InternalNode* InternalNode::insert(int value)
 					return NULL;
 				}
 				else {
-					return split(value); //Split
+					return split(value, newNode); //Split
 				}
 			}
 			return NULL;
@@ -87,7 +87,7 @@ InternalNode* InternalNode::insert(int value)
 					return NULL;
 				}
 				else {
-					return split(value); //Split
+					return split(value, newNode); //Split
 				}
 			}
 			return NULL;
@@ -160,7 +160,7 @@ void InternalNode::setChildren(int num, int pos, BTreeNode* childNode)
 	}	
 }
 
-InternalNode* InternalNode::split(int value) {
+InternalNode* InternalNode::split(int value, BTreeNode *newCreatedNode) {
 
 	cout << "split \n";
 	InternalNode *newInternalNode = new InternalNode(internalSize, leafSize, parent, this, this->getRightSibling());

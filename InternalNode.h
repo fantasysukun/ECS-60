@@ -20,7 +20,7 @@ public://
 
   //added
   void AddNewInternalNode(int, BTreeNode*);
-  InternalNode* split(int);
+  InternalNode* split(int, BTreeNode*);
   void KeysUpdate();
   void ReplaceNewValueIntoInternalNode(int, InternalNode*);
   void setChildren(int, int, BTreeNode*);
