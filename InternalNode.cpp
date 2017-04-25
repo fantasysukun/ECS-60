@@ -227,80 +227,36 @@ InternalNode* InternalNode::split(int value, BTreeNode *newCreatedNode) {
 InternalNode* InternalNode::split(int pos, BTreeNode* newCreatedNode)
 {
 	InternalNode *newInternalNode = new InternalNode(internalSize, leafSize, parent, this, this->getRightSibling());
-	//set all pointers
-	InternalNode* originalRight = (InternalNode*)getRightSibling();
-	newInternalNode->setParent(parent);
-	setRightSibling(newInternalNode);
-	if (originalRight == NULL)//there is no node on the right
-	{
+	//No need to worry about LeftSibling since it is split. The LeftSibling is eirther full or null.
+	InternalNode* CurrentRightSibling = (InternalNode*)getRightSibling();
+
+	setRightSibling(newInternalNode); //New InternalNode will always on the right of the originalNode.
+	newInternalNode->setParent(parent); //update newNode to its parent
+	newInternalNode->setLeftSibling(this);
+
+	if (CurrentRightSibling == NULL) {//If the RightSibling is null
 		newInternalNode->setRightSibling(NULL);
-		newInternalNode->setLeftSibling(this);
 	}
-	else//there is node on the right
-	{
-		newInternalNode->setRightSibling(originalRight);
-		newInternalNode->setLeftSibling(this);
-		originalRight->setLeftSibling(newInternalNode);
+	else {
+		CurrentRightSibling->setLeftSibling(newInternalNode);//New InternalNode will be on the left of the CurrentRightSibling
+		newInternalNode->setRightSibling(CurrentRightSibling);
 	}
 
-	int center = (int)ceil((double)internalSize / 2);
-	if (pos < center - 1)
+	if (pos < (int)ceil((double)internalSize / 2) - 1)
 	{
-		int j = 0;
-		//children[center - 1]->getLeftSibling()->setRightSibling(NULL);
-		//children[center - 1]->setLeftSibling(NULL);
-		for (int i = center - 1; i < internalSize; i++)
-		{
-			newInternalNode->setChildren(keys[i], j, children[i]);
-			setChildren(0, i, NULL);
-			j++;
-		}
-		for (int i = center - 2; i > pos + 1; i--)
-		{
-			children[i + 1] = children[i];
-			keys[i + 1] = keys[i];
-		}
-		children[pos + 1] = newCreatedNode;
-		keys[pos + 1] = newCreatedNode->getMinimum();
-		newCreatedNode->setParent(this);
-		count++;
+		FirstCase(pos, newInternalNode, newCreatedNode);
 	}
-	else if (pos == center - 1)//6
+	else if (pos == (int)ceil((double)internalSize / 2) - 1)
 	{
-		//children[center - 1]->setRightSibling(NULL);
-		//newCreatedNode->setLeftSibling(NULL);
-		newInternalNode->setChildren(newCreatedNode->getMinimum(), 0, newCreatedNode);
-		int j = 1;
-		for (int i = center; i < internalSize; i++)
-		{
-			newInternalNode->setChildren(keys[i], j, children[i]);
-			setChildren(0, i, NULL);
-			j++;
-		}
+		SecendCase(pos, newInternalNode, newCreatedNode);
 	}
-	else//pos > center - 1. here we need to explictly consider *ret
+	else
 	{
-		int j = 0;
-		//children[center - 1]->setRightSibling(NULL);
-		//children[center]->setLeftSibling(NULL);
-		int i = center;
-		for (; i <= pos; i++)
-		{
-			newInternalNode->setChildren(keys[i], j, children[i]);
-			setChildren(0, i, NULL);
-			j++;
-		}
-		newInternalNode->setChildren(newCreatedNode->getMinimum(), j, newCreatedNode);
-		j++;
-		for (i = pos + 1; i<internalSize; i++)
-		{
-			newInternalNode->setChildren(keys[i], j, children[i]);
-			setChildren(0, i, NULL);
-			j++;
-		}
+		ThirdCase(pos, newInternalNode, newCreatedNode);
 	}
 	return newInternalNode;
 }
+
 
 //Replace New Value Into LeafNode
 void InternalNode::ReplaceNewValueIntoInternalNode(int value, InternalNode* newNode) {
@@ -309,6 +265,7 @@ void InternalNode::ReplaceNewValueIntoInternalNode(int value, InternalNode* newN
 	int NewKeyindex = 0;
 	for (int i = internalSize - 1; i >= 0 && tempCount > 0; i--) {
 		if (value < children[i]->getMinimum()) {
+
 			newNode->setChildren(keys[i], NewKeyindex, children[i]);
 			setChildren(0, i, NULL);
 			count--;
@@ -324,61 +281,63 @@ void InternalNode::ReplaceNewValueIntoInternalNode(int value, InternalNode* newN
 	if (tempCount == 0 && inserted == false) {
 		newNode->insert(value);
 	}
+
+
 }
 
 //Setup Children for the new internalNode
-void InternalNode::FirstCase(int pos, InternalNode *newInternalNode, BTreeNode *newCreatedNode) {
+void InternalNode::FirstCase(int pos, InternalNode *newInternalNode, BTreeNode *newNode) {
 
-	int j = 0;
-	for (int i = (int)ceil((double)internalSize) / 2 - 1; i < internalSize; i++) {
-		//newInternalNode->setChildren(keys[i], j, children[i]);
-		//setChildren(0, i, NULL);
-		newInternalNode->keys[pos] = keys[i];
-		newInternalNode->children[pos] = children[i];
-		if (newInternalNode->children[i] == NULL) count--;
-		else {
-			children[i]->setParent(this);
-			count++;
-		}
-		keys[i] = 0; children[i] = NULL; count--;
-		j++;
+	int Newindex = 0;
+	for (int i = (int)ceil((double)internalSize / 2) - 1; i < internalSize; i++)
+	{
+		newInternalNode->setChildren(keys[i], Newindex, children[i]);
+		setChildren(0, i, NULL);
+		Newindex++;
 	}
-	for (int i = (int)ceil((double)internalSize) / 2 - 2; i > pos + 1; i--) {
+
+	for (int i = (int)ceil((double)internalSize / 2) - 2; i > pos + 1; i--)
+	{
 		children[i + 1] = children[i];
 		keys[i + 1] = keys[i];
 	}
-	children[pos + 1] = newCreatedNode;
-	keys[pos + 1] = newCreatedNode->getMinimum();
-	newCreatedNode->setParent(this);
+
+	children[pos + 1] = newNode;
+	keys[pos + 1] = newNode->getMinimum();
+	newNode->setParent(this);
 	count++;
 }
 
 //Setup Children for the new internalNode
-void InternalNode::SecendCase(int pos, InternalNode *newInternalNode, BTreeNode *newCreatedNode) {
-	newInternalNode->setChildren(newCreatedNode->getMinimum(), 0, newCreatedNode);
-	int j = 1;
-	for (int i = (int)ceil((double)internalSize) / 2; i < internalSize; i++) {
-		newInternalNode->setChildren(keys[i], j, children[i]);
+void InternalNode::SecendCase(int pos, InternalNode *newInternalNode, BTreeNode *newNode) {
+
+	newInternalNode->setChildren(newNode->getMinimum(), 0, newNode);
+	int newindex = 1;
+	for (int i = (int)ceil((double)internalSize / 2); i < internalSize; i++)
+	{
+		newInternalNode->setChildren(keys[i], newindex, children[i]);
 		setChildren(0, i, NULL);
-		j++;
+		newindex++;
 	}
 }
 
 //Setup Children for the new internalNode
-void InternalNode::ThirdCase(int pos, InternalNode *newInternalNode, BTreeNode *newCreatedNode)
+void InternalNode::ThirdCase(int pos, InternalNode *newInternalNode, BTreeNode *newNode)
 {
-	int j = 0;
-	for (int i = (int)ceil((double)internalSize) / 2; i <= pos; i++) {
-		newInternalNode->setChildren(keys[i], j, children[i]);
-		setChildren(0, i, NULL);
-		j++;
-	}
 
-	newInternalNode->setChildren(newCreatedNode->getMinimum(), j, newCreatedNode);
-	j++;
-	for (int i = pos + 1; i<internalSize; i++) {
-		newInternalNode->setChildren(keys[i], j, children[i]);
+	int newindex = 0;
+	for (int i = (int)ceil((double)internalSize / 2); i <= pos; i++)
+	{
+		newInternalNode->setChildren(keys[i], newindex, children[i]);
 		setChildren(0, i, NULL);
-		j++;
+		newindex++;
+	}
+	newInternalNode->setChildren(newNode->getMinimum(), newindex, newNode);
+	newindex++;
+	for (int i = pos + 1; i<internalSize; i++)
+	{
+		newInternalNode->setChildren(keys[i], newindex, children[i]);
+		setChildren(0, i, NULL);
+		newindex++;
 	}
 }
