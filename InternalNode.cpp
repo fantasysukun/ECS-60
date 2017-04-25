@@ -33,18 +33,24 @@ void InternalNode::AddNewInternalNode(int pos, BTreeNode *newNode) {
 
 InternalNode* InternalNode::insert(int value)
 {
-	cout << "insert1 \n";
+	//cout << "insert1 \n";
 	int pos = count - 1;
-	cout << "pos: " << pos << " \n";
+	//cout << "pos: " << pos << " \n";
 	for (int i = 0; i <= pos; i++) {
-		if (value < keys[i]) {
+		if (value < children[i]->getMinimum() || value < children[i + 1]->getMinimum() ) {
+			//cout << "1 \n";
+			//cout << "value: " << value << "\n";
+			//cout << "keys[i]: " << keys[i] << "\n";
+			//cout << "keys[i+1]: " << keys[i+1] << "\n";
 
 			BTreeNode *newNode = children[i]->insert(value); 
+			//cout << "children[i]: " << children[i]->getCount() << "\n";
 			keys[i] = children[i]->getMinimum();
 
 			if (this->getCount() < internalSize && newNode != NULL) { // ewNode != NULL means Split
-				cout << "1 \n";
+				//cout << "2 \n";
 				AddNewInternalNode(i, newNode);
+				return NULL;
 			}
 			/*
 			else { //Current Chilren is full
@@ -60,16 +66,19 @@ InternalNode* InternalNode::insert(int value)
 				//Check Split
 			}
 			*/
+			return NULL;
 		}
-		else if (value > keys[pos] && i == pos){
-			cout << "3 \n";
+		else if (value > children[pos]->getMinimum() ){
+			//cout << "3 \n";
 			BTreeNode *newNode = children[pos]->insert(value);
 			keys[pos] = children[pos]->getMinimum();
 
 			if (this->getCount() < internalSize && newNode != NULL) {
-				cout << "4 \n";
+				//cout << "4 \n";
 				AddNewInternalNode(pos, newNode);
+				return NULL;
 			}
+			return NULL;
 			/*
 			else {
 				cout << "5 \n";
