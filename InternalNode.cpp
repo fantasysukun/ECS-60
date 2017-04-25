@@ -49,14 +49,14 @@ InternalNode* InternalNode::insert(int value)
 			}
 			else if (this->getCount() >= internalSize && newNode != NULL) {
 				cout << "New add 1\n";
-				if (getLeftSibling() != NULL && getLeftSibling()->getCount() < leafSize) { //Checking LeftSibling
+				if (getLeftSibling() != NULL && getLeftSibling()->getCount() < internalSize) { //Checking LeftSibling
 					cout << "New add 12\n";
-					ShiftValueToLeft(pos, newNode);
+					ShiftValueToLeft(i, newNode);
 					return NULL;
 				}
-				else if (getRightSibling() != NULL && getRightSibling()->getCount() < leafSize) { //Checking RightSibling
+				else if (getRightSibling() != NULL && getRightSibling()->getCount() < internalSize) { //Checking RightSibling
 					cout << "New add 13\n";
-					ShiftValueToRight(pos, newNode);
+					ShiftValueToRight(i, newNode);
 					return NULL;
 				}
 				else {
@@ -78,11 +78,11 @@ InternalNode* InternalNode::insert(int value)
 			else if (this->getCount() >= internalSize && newNode != NULL) {
 				cout << "New add 2\n";
 				
-				if (getLeftSibling() != NULL && getLeftSibling()->getCount() < leafSize) { //Checking LeftSibling
+				if (getLeftSibling() != NULL && getLeftSibling()->getCount() < internalSize) { //Checking LeftSibling
 					ShiftValueToLeft(pos, newNode);
 					return NULL;
 				}
-				else if (getRightSibling() != NULL && getRightSibling()->getCount() < leafSize) { //Checking RightSibling
+				else if (getRightSibling() != NULL && getRightSibling()->getCount() < internalSize) { //Checking RightSibling
 					ShiftValueToRight(pos, newNode);
 					return NULL;
 				}
@@ -137,15 +137,14 @@ void InternalNode::ShiftValueToLeft(int pos, BTreeNode *newNode) {
 	leftSibing->count++;
 	children[0]->setParent(leftSibing);
 
-	int i = 0;
-	for (; i < pos; i++)
+	for (int i = 0; i < pos; i++) //Reset current children and keys
 	{
 		children[i] = children[i + 1];
 		keys[i] = keys[i + 1];
 	}
 
-	children[i] = newNode;
-	keys[i] = newNode->getMinimum();
+	children[pos] = newNode;
+	keys[pos] = newNode->getMinimum();
 	newNode->setParent(this);
 }
 
