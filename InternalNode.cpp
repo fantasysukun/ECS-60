@@ -48,6 +48,7 @@ InternalNode* InternalNode::insert(int value)
 				return NULL;
 			}
 			else {
+				/*
 				if (getLeftSibling() != NULL && getLeftSibling()->getCount() < internalSize) { //Checking LeftSibling
 					//ShiftValueToLeft(value);
 					return NULL;
@@ -59,6 +60,7 @@ InternalNode* InternalNode::insert(int value)
 				else {
 					return split(value); //Split
 				}
+				*/
 			}
 			return NULL;
 		}
@@ -73,6 +75,7 @@ InternalNode* InternalNode::insert(int value)
 				return NULL;
 			}
 			else {
+				/*
 				if (getLeftSibling() != NULL && getLeftSibling()->getCount() < leafSize) { //Checking LeftSibling
 					//ShiftValueToLeft(value);
 					return NULL;
@@ -84,6 +87,7 @@ InternalNode* InternalNode::insert(int value)
 				else {
 					return split(value); //Split
 				}
+				*/
 			}
 			return NULL;
 		}
