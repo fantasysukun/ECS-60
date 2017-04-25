@@ -97,9 +97,17 @@ void LeafNode::ReplaceNewValueIntoLeafNode(int value, LeafNode* newNode) {
 			tempCount--;
 		}
 		else {
-			newNode->insert(value);
-			tempCount--;
-			inserted = true;
+			if (!inserted) {
+				newNode->insert(value);
+				i++;
+				tempCount--;
+				inserted = true;
+			}
+			else {
+				newNode->insert(values[i]);
+				count--;
+				tempCount--;
+			}
 		}
 	}
 	if (tempCount == 0 && inserted == false) {
@@ -111,7 +119,8 @@ void LeafNode::ReplaceNewValueIntoLeafNode(int value, LeafNode* newNode) {
 void LeafNode::SortedArray() {
 	for (int i = 1; i < count; i++)
 	{
-		int index = values[i]; int j = i;
+		int index = values[i]; 
+		int j = i;
 		while (j > 0 && values[j - 1] > index)
 		{
 			values[j] = values[j - 1];
